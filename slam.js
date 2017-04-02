@@ -1,34 +1,46 @@
-const Discord = require("discord.js"), client = new Discord.Client();
-const request = require("request-promise")
+const superagent = require("superagent");
+const Eris       = require("eris");
+const client     = new Eris("BOT TOKEN");
 
-let token = ""
-let channelid = ""
+client.connect();
 
-client.login(token);
-
-client.on("ready", () => {
-	client.channels.get(channelid).join().then(connection => {
-		let stream = request({uri:'http://stream.radiocorp.nl/web11_aac', headers:{'User-Agent':'SLAM!'}});
-		connection.playStream(stream, {passes: 2})
-	})
+client.on("ready", async () => {
+	await client.joinVoiceChannel("VOICECHANNEL ID");
+	client.voiceConnections.get("GUILD ID").play("http://stream.radiocorp.nl/web11_aac")
 })
 
-client.on("message", msg => {
-	if (msg.content === "slam save") {
-		msg.author.sendMessage(client.user.presence.game.name)
-	}
+client.on("messageCreate", msg => {
+	if (msg.author.bot) return;
+
+	if (msg.content === "slam save") msg.author.createMessage(now);
+	if (msg.content === "slam stats") msg.channel.createMessage({
+		embed: {
+			color: 0xE60268,
+			title: "SLAM! Stats",
+			description: `Ping: ${msg.channel.guild.shard.latency}ms\n` +
+						 `RAM: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB\n` +
+						 `Uptime: ${process.uptime() / 60} minutes`
+		}
+	})
+
+	if (msg.content === "slam np") msg.channel.createMessage({
+		embed: {
+			color: 0xE60268,
+			title: "Now Playing",
+			description: now
+		}
+	})
+
+	if (msg.content === "slam help") msg.channel.sendMessage("slam < save | stats | np >");
 })
 
 let now = ""
 
-setInterval(() => {
-	request({
-		uri:'https://live.slam.nl/slam-hardstyle/metadata/hardstyle_livewall',
-		headers:{'User-Agent':'SLAM!'},
-		json: true
-	}).then(data => {
-		if (now === data) return false;
-		now = data
-		client.user.setGame(`${data.nowArtist} - ${data.nowTitle}`)
-	})
+setInterval(async () => {
+	let res = await superagent.get("https://live.slam.nl/slam-hardstyle/metadata/hardstyle_livewall").set("User-Agent", "discord-slambot/1.0")
+	if (!res || !res.body.nowArtist || !res.body.nowTitle || now === `${res.body.nowArtist} - ${res.body.nowTitle}`) return;
+
+	now = `${res.body.nowArtist} - ${res.body.nowTitle}`
+	client.editStatus({ name: `${res.body.nowArtist} - ${res.body.nowTitle}` });
+
 }, 10000)
