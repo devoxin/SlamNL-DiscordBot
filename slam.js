@@ -31,7 +31,7 @@ client.on("messageCreate", msg => {
 		}
 	})
 
-	if (msg.content === "slam help") msg.channel.sendMessage("slam < save | stats | np >");
+	if (msg.content === "slam help") msg.channel.createMessage("slam < save | stats | np >");
 })
 
 let now = ""
