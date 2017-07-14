@@ -5,7 +5,7 @@ const client = new Eris('TOKEN');
 client.connect();
 
 client.on('ready', async () => {
-	await client.joinVoiceChannel('VOICECHANNEL ID');
+    await client.joinVoiceChannel('VOICECHANNEL ID');
 	client.voiceConnections.get('GUILD ID').play('http://stream.radiocorp.nl/web11_aac')
 })
 
