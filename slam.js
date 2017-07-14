@@ -6,7 +6,7 @@ client.connect();
 
 client.on('ready', async () => {
     await client.joinVoiceChannel('VOICECHANNEL ID');
-    client.voiceConnections.get('GUILD ID').play('http://stream.radiocorp.nl/web11_aac')
+    client.voiceConnections.get('GUILD ID').play('http://stream.radiocorp.nl/web11_aac');
 })
 
 client.on('messageCreate', msg => {
@@ -34,12 +34,12 @@ client.on('messageCreate', msg => {
         msg.channel.createMessage('slam < save | stats | np >');
 })
 
-let now = ''
+let now = '';
 
 setInterval(async () => {
-    let res = await req.get('https://live.slam.nl/slam-hardstyle/metadata/hardstyle_livewall').set('User-Agent', 'discord-slambot/1.0')
+    let res = await req.get('https://live.slam.nl/slam-hardstyle/metadata/hardstyle_livewall').set('User-Agent', 'discord-slambot/1.0');
     if (res.status !== 200 || !res.body.nowArtist || !res.body.nowTitle || now === `${res.body.nowArtist} - ${res.body.nowTitle}`) return;
 
-    now = `${res.body.nowArtist} - ${res.body.nowTitle}`
+    now = `${res.body.nowArtist} - ${res.body.nowTitle}`;
     client.editStatus({ name: `${res.body.nowArtist} - ${res.body.nowTitle}` });
 }, 10000)
