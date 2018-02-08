@@ -5,9 +5,9 @@ const client = new Eris('TOKEN');
 client.connect();
 
 client.on('ready', async () => {
-    await client.joinVoiceChannel('VOICECHANNEL ID');
-    client.voiceConnections.get('GUILD ID').play('http://stream.radiocorp.nl/web11_aac');
-})
+    const vc = await client.joinVoiceChannel('VOICECHANNEL ID');
+    vc.play('http://stream.radiocorp.nl/web11_aac');
+});
 
 client.on('messageCreate', msg => {
     if (msg.author.bot) return;
@@ -32,7 +32,7 @@ client.on('messageCreate', msg => {
 
     if (msg.content === 'slam help') 
         msg.channel.createMessage('slam < save | stats | np >');
-})
+});
 
 let now = '';
 
